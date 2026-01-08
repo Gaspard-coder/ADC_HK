@@ -7,23 +7,24 @@ N = 2^16; %Nb total de points
 t_sim = 0:0.01:10 ;
 Fs = 1e6; %Fréquence du signal d'entrée (à adapter)
 V = sin(2*pi*Fs*t_sim); 
-
+% On applique un fenêtrage de type blacman
+win = blackman(length(V),'periodic');
+V_windowed = V(:).*win(:);
 
 Vref = 1.5; %Tension de référence (arbitraire, à adapter ?)
 
 %Question 2.1 : Un ADC peut donc etre modélisé par y = floor(V/q)
-function binary = ADC_convertor(n,Vin)
+function V = ADC_convertor(n,Vin)
     %Calcul du quantum
         q = Vref/2^n;
         % Conversion analogique-numérique
-        binary = floor(Vin/q);
+        CAN = floor(Vin/q);
 end
 %Question 2.2
 
 % On note n le nombre de bits de l'ADC et V la tension d'entrée
-function spectre = ADC_transform(V)
-    % On applique un fenêtrage de type blackman
-    win = blackman(length(V),'periodic');
-    V_windowed = V(:).*win(:);
+function spectre = ADC_transform(n,V)
+    
+
 
 end

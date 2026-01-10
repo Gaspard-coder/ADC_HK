@@ -50,17 +50,9 @@ title(sprintf('ZOOM - zoom avec escalier CAN %d bits (Q = %.4f V)', Nbits, Q));
 legend('Location', 'best');
 
 %% Question 2 : Traçage du spectre de sortie d'un CAN 10 bits
-win = blackman(length(y_can),'periodic');   % Création de la fenêtre type Blackman
-y_windowed = y_can(:).*win(:);              % Fenetrage du signal
-Xpsd = abs(fft(y_windowed)).^2;
 bin_freq_val = 1:1:N;
-plot(bin_freq_val,10*log10(Xpsd))
-xlabel('Bin');
-ylabel('Densité Spectrale de Puissance (dB)');
-title('DSP');
 
-% Calcul de spectre avec fonction : 
-figure();
+figure('Name', 'Question 2.2 - Calcul du spectre de la fonction');
 Xpsd = calc_spectre(y_can);
 plot(bin_freq_val,10*log10(Xpsd))
 xlabel('Bin');

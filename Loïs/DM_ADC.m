@@ -1,0 +1,101 @@
+close all;
+clc;
+
+%%% LELARGE Loïs & VIBERT Gaspard
+
+% Paramètres du CAN 
+Nbits   =   10;        % Nombre de bits pour le CAN
+PE      =   2;         % Pleine Echelle
+
+% --- Paramètres ---
+
+Fe      =   30.72e6;            % Fréquence d'échantillonnage (Hz)
+Fcarr   =   1e6;                % Fréquence de porteuse à modifier pour être sur un bin
+N       =   2^16;               % Nombre de sample
+t       =   0:1/Fe:(N-1)/Fe;    % temps de simulation avec discretisation     
+A       =   PE/2;               % Amplitude du sinus
+
+Fsig    =   round(Fcarr/Fe*length(t))/length(t)*Fe; % fréquence de porteuse adaptée pour être sur le bin
+
+x       =   A*sin(2*pi*Fsig*t);   % Création du signal d'entrée (Amplitude 1, donc de -1 à 1)
+
+
+%% Question 1 : Proposer une fonction qui modélise un CAN
+y_can = CAN(x,Nbits,PE);
+plot(t,y_can)
+
+%% Question 2 : Traçage du spectre de sortie d'un CAN 10 bits
+win = blackman(length(y_can),'periodic');   % Création de la fenêtre
+y_windowed = y_can(:).*win(:);              % Fenetrage du signal
+Xpsd = abs(fft(y_windowed)).^2;
+bin_freq_val = 1:1:N;
+plot(bin_freq_val,10*log10(Xpsd))
+xlabel('Bin');
+ylabel('Densité Spectrale de Puissance (dB)');
+title('DSP');
+
+% Calcul de spectre avec fonction : 
+figure();
+Xpsd = calc_spectre(y_can);
+plot(bin_freq_val,10*log10(Xpsd))
+xlabel('Bin');
+ylabel('Densité Spectrale de Puissance (dB)');
+title('DSP');
+
+%% Question 3 : Calcul du SNR
+SNR = calc_SNR_freq(Xpsd, Fe, 0, 10e6, Fsig);
+
+%% Question 4 : Calcul du SQNR et comparaison 
+Nbits_vecteur = 1:10;     % Vecteur de bits de 1 à 10
+SNR_mesure = zeros(size(Nbits_vecteur)); % Pour stocker les résultats
+
+for i = 1:length(Nbits_vecteur)
+    n_bits = Nbits_vecteur(i);    
+    y_can = CAN(x,n_bits,PE);
+    % --- Calcul du SNR ---
+    SNR_mesure(i) = calc_SNR_freq(y_can,Fe,0,10e6,Fsig);
+end
+% --- 3. Comparaison Théorique ---
+SNR_theorie = 6.02 * Nbits_vecteur + 1.76 + 20*log10(2*A/PE) + 10*log10(Fe/(2*10e6));
+
+% --- 4. Affichage des résultats ---
+figure('Color', 'w');
+plot(Nbits_vecteur, SNR_mesure, '-o', 'LineWidth', 2, 'DisplayName', 'Mesure (calc\_SNR\_freq)');
+hold on;
+plot(Nbits_vecteur, SNR_theorie, '--r', 'LineWidth', 2, 'DisplayName', 'Théorie SQNR');
+grid on;
+xlabel('Nombre de bits (N)');
+ylabel('SNR (dB)');
+title('Évolution du SNR en fonction de la résolution du CAN');
+legend('Location', 'best');
+
+
+%% Question 5
+A_vec = 0.01:0.01:PE/2*1.5; 
+
+% Allocation mémoire
+SNR_simu    = zeros(size(A_vec));
+
+for i = 1:length(A_vec)
+    A = A_vec(i);
+    
+    % A. Génération du signal
+    x_in = A * sin(2*pi*Fsig*t);
+    
+    y_can = CAN(x_in, Nbits, PE);
+
+    SNR_simu(i) = calc_SNR_freq(y_can, Fe, 0, 10e6, Fsig);
+end
+% --- Comparaison Théorique ---
+SNR_theorie = 6.02 * Nbits + 1.76 + 20*log10(2*A_vec/PE) + 10*log10(Fe/(2*10e6));
+
+% --- Affichage des résultats ---
+figure('Color', 'w', 'Name', 'Evolution SNR vs Amplitude');
+plot(A_vec, SNR_theorie, '--r', 'LineWidth', 2, 'DisplayName', 'Théorie (Eq. 1)');
+hold on;
+plot(A_vec, SNR_simu, '-bo', 'LineWidth', 2, 'MarkerFaceColor', 'b', 'DisplayName', 'Simulation');
+grid on;
+xlabel('Amplitude d''entrée A_{in} (V)');
+ylabel('SNR (dB)');
+title(['SNR en sortie du CAN ' num2str(Nbits) ' bits (BW = 10 MHz)']);
+legend('Location', 'SouthEast');

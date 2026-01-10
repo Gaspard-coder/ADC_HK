@@ -31,24 +31,6 @@ title(sprintf('Signal après quantification - CAN %d bits (PE = %.1f V)', Nbits,
 legend('Location', 'best');
 xlim([0 t(500)]);
 
-% On peut zoomer pour mieux voir la quantification :
-T_sig = 1/Fsig;
-nb_points_par_periode = round(Fe * T_sig);
-nb_pts_zoom = round(nb_points_par_periode * 1.5); % 1.5 période pour bien voir
-Q = PE / 2^Nbits; % Quantum de quantification
-
-figure('Name', 'Question 2.1 - zoom avec escalier', 'Position', [150 150 1200 800]);
-subplot(2,1,1);
-stairs(t(1:nb_pts_zoom)*1e6, y_can(1:nb_pts_zoom), 'r-', 'LineWidth', 2, 'DisplayName', 'Signal quantifié (escalier)');
-hold on;
-plot(t(1:nb_pts_zoom)*1e6, x(1:nb_pts_zoom), 'b--', 'LineWidth', 1.5, 'DisplayName', 'Signal original');
-plot(t(1:nb_pts_zoom)*1e6, y_can(1:nb_pts_zoom), 'ko', 'MarkerSize', 4, 'HandleVisibility', 'off');
-grid on;
-xlabel('Temps (µs)');
-ylabel('Amplitude (V)');
-title(sprintf('ZOOM - zoom avec escalier CAN %d bits (Q = %.4f V)', Nbits, Q));
-legend('Location', 'best');
-
 %% Question 2 : Traçage du spectre de sortie d'un CAN 10 bits
 bin_freq_val = 1:1:N;
 

@@ -9,9 +9,9 @@ function SNR = calc_SNR_freq(x, Fe, f_min, f_max, Fsig)
     yDSP = calc_spectre(x);
 
     yDSP = yDSP/N; % Parseval
-    sig_bin = fix(Fsig/Fe * N) + 1;
+    sig_bin = fix(Fsig/Fe * N) + 1; % Attention à l'indexation
     
-    sig_bin_win = sig_bin + (-2:2);
+    sig_bin_win = sig_bin + (-2:2); % On prend 5 bins en cas de fuite spéctrale
 
     % Conversion des fréquences limites (Hz) en indices de bins
     idx_min = round(f_min/Fe*N) + 1;

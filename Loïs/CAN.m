@@ -1,5 +1,12 @@
 function y_out = CAN(x, N_bits, PE, DSR)
 
+    %Entrées :
+    %  x      : Signal d'entrée (vecteur)
+    %  N_bits : Nombre de bits du CAN
+    %  PE     : Pleine échelle
+    %  DSR    : Facteur de sous-échantillonnage (optionnel, défaut=1)
+    %  Sortie : y_out : Signal quantifié
+
     % 1. Sous-échantillonnage (Downsampling)
     % On ne garde qu'un échantillon tous les 'DSR' échantillons
     if nargin < 4

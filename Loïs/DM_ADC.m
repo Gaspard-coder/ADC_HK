@@ -76,10 +76,10 @@ end
 SNR_theorie = 6.02 * Nbits_vecteur + 1.76 + 20*log10(2*A/PE) + 10*log10(Fe/(2*10e6));
 
 % --- 4. Affichage des résultats ---
-figure('Color', 'w');
+figure('Name', 'Question 2.4 : Comparaison théorie/pratique', 'Color', 'w');
 plot(Nbits_vecteur, SNR_mesure, '-o', 'LineWidth', 2, 'DisplayName', 'Mesure (calc\_SNR\_freq)');
 hold on;
-plot(Nbits_vecteur, SNR_theorie, '--r', 'LineWidth', 2, 'DisplayName', 'Théorie SQNR');
+plot(Nbits_vecteur, SNR_theorie, '--r', 'LineWidth', 2, 'DisplayName', 'SQNR théorique');
 grid on;
 xlabel('Nombre de bits (N)');
 ylabel('SNR (dB)');
